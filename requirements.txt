@@ -1,0 +1,569 @@
+Below is a *developer action checklist* written the way a product owner or technical PM would give it to a developer after a UX audit. This is not theory — this is a *practical implementation checklist* your developer can execute.
+
+I organized it into:
+
+•⁠  ⁠*Critical fixes (must fix now)*
+•⁠  ⁠*UX improvements (high value)*
+•⁠  ⁠*Structure improvements*
+•⁠  ⁠*Functionality fixes*
+•⁠  ⁠*Content fixes*
+•⁠  ⁠*Technical cleanup*
+
+---
+
+# MCG WEBSITE DEVELOPER ACTION CHECKLIST
+
+Site Review: alliances.life
+
+---
+
+# PHASE 1 — CRITICAL FIXES (DO FIRST)
+
+These affect credibility and should be fixed immediately.
+
+---
+
+## 1. Fix Brand Name Consistency
+
+### Issue:
+
+Site shows mixed identity:
+
+•⁠  ⁠Muhittin
+•⁠  ⁠Multiverse Consulting Group
+•⁠  ⁠Business Growth Platform
+
+This creates confusion and hurts trust.
+
+### Developer Tasks:
+
+Standardize everywhere:
+
+Replace with:
+
+*Multiverse Consulting Group*
+
+Update:
+
+Meta titles
+Page titles
+Browser tab title
+SEO metadata
+Article templates
+Footer copyright
+Schema name
+
+### Required Title Format:
+
+Homepage:
+
+
+Multiverse Consulting Group | Global Advisory Platform
+
+
+Article pages:
+
+
+[Article Title] | Insights | Multiverse Consulting Group
+
+
+### Acceptance criteria:
+
+No page contains:
+Muhittin
+Business Growth Platform
+
+Unless intentional.
+
+---
+
+## 2. Fix Main Navigation Structure
+
+### Issue:
+
+Too many top-level options reduces clarity.
+
+### Required Navigation Structure:
+
+*Main menu:*
+
+Home
+About
+Services
+Industries
+Insights
+Partnerships
+Contact
+
+### Move to secondary:
+
+Join Talent Network
+Submit Opportunity
+
+### Remove from public navigation:
+
+Admin Portal
+
+(Admin must be direct URL only)
+
+### Acceptance criteria:
+
+Max 7 primary menu items.
+
+---
+
+## 3. Rename "Team" → "Leadership"
+
+### Issue:
+
+Team feels small company.
+Leadership feels institutional.
+
+### Developer task:
+
+Rename:
+
+Team → Leadership
+
+Update:
+
+Menu
+Page title
+URLs
+Breadcrumbs
+
+### Acceptance:
+
+Navigation shows:
+
+Leadership
+
+---
+
+
+# PHASE 2 — UX STRUCTURE IMPROVEMENTS
+
+---
+
+## 5. Improve Homepage Message Hierarchy
+
+### Issue:
+
+Messaging unclear between:
+
+Consulting firm
+Platform
+Network
+
+### Required structure:
+
+Hero must show:
+
+Headline:
+Strategy. Talent. Investment. Execution.
+
+Subheadline:
+Multiverse Consulting Group delivers growth through advisory, partnerships and execution support.
+
+3 pillars:
+
+Strategy Advisory
+Talent Solutions
+Global Expansion
+
+CTA:
+Book Consultation
+
+### Acceptance:
+
+Homepage explains:
+
+What MCG does
+Who it helps
+How it helps
+
+Within first screen.
+
+---
+
+## 6. Simplify Footer Structure
+
+### Issue:
+
+Footer likely overloaded.
+
+### Required footer structure:
+
+Company:
+About
+Leadership
+Value Delivery System
+
+Services:
+Strategy Advisory
+Global Expansion
+Executive Search
+AI Transformation
+
+Resources:
+Insights
+Case Studies
+Partnerships
+
+Contact:
+Contact
+Book Consultation
+
+### Move to footer only:
+
+Join Talent Network
+Submit Opportunity
+
+### Acceptance:
+
+Footer clean and structured.
+
+---
+
+# PHASE 3 — FUNCTIONALITY IMPROVEMENTS
+
+---
+
+## 7. Verify All Menu Links Work
+
+Developer must test:
+
+All nav links open correct pages.
+
+Test:
+
+Desktop nav
+Mobile nav
+Footer links
+
+Acceptance:
+
+No dead links.
+
+---
+
+## 8. Improve Contact Form UX
+
+### Required fields:
+
+Name
+Email
+Company
+Country
+Interest dropdown
+
+Options:
+
+Strategy
+AI
+Talent
+Expansion
+Partnership
+
+Message
+
+### Add:
+
+Success confirmation:
+
+"Thank you. MCG will contact you."
+
+### Add validation:
+
+Email format
+Required fields
+
+### Acceptance:
+
+Form shows success message.
+
+---
+
+## 9. Improve Mobile Navigation
+
+Developer must verify:
+
+Menu collapses properly.
+
+Mobile must include:
+
+Hamburger menu
+Smooth open/close
+Proper spacing
+Clickable buttons
+
+### Acceptance:
+
+Mobile nav easy to use.
+
+---
+
+
+# PHASE 4 — CONTENT STRUCTURE IMPROVEMENTS
+
+---
+
+## 11. Improve Services Page Structure
+
+Each service must follow:
+
+Hero title
+
+Problem section
+
+MCG solution
+
+Outcomes
+
+CTA
+
+### Acceptance:
+
+All services follow same layout.
+
+---
+
+## 12. Improve Insights Structure
+
+Each insight must include:
+
+Title
+Date
+Category
+Summary
+Article body
+Related insights
+CTA
+
+### Add CTA end:
+
+Discuss this topic with MCG.
+
+### Acceptance:
+
+All articles consistent.
+
+---
+
+## 13. Improve Case Studies Structure
+
+Each case study:
+
+Challenge
+Approach
+Outcome
+Impact
+
+### Acceptance:
+
+All case studies follow template.
+
+---
+
+# PHASE 5 — DESIGN IMPROVEMENTS
+
+---
+
+## 14. Improve Visual Hierarchy
+
+Developer must adjust:
+
+Spacing between sections
+Typography sizes
+Card padding
+Section margins
+
+Rules:
+
+More white space.
+
+### Acceptance:
+
+Site feels less crowded.
+
+---
+
+## 15. Improve Card System
+
+Standardize:
+
+Service cards
+Industry cards
+Insight cards
+
+All must use:
+
+Same padding
+Same border
+Same hover effect
+
+### Acceptance:
+
+Visual consistency.
+
+---
+
+## 16. Improve Section Spacing
+
+Add spacing:
+
+Between major sections:
+
+Minimum:
+
+80px desktop
+50px mobile
+
+### Acceptance:
+
+Cleaner visual flow.
+
+---
+
+# PHASE 6 — TECHNICAL CLEANUP
+
+---
+
+## 17. SEO Standardization
+
+Developer must verify:
+
+Every page has:
+
+Meta title
+Meta description
+H1
+Alt tags
+
+URL structure:
+
+/services
+/industries
+/insights
+
+### Acceptance:
+
+SEO basics present.
+
+---
+
+## 18. Performance Cleanup
+
+Remove:
+
+Unused scripts
+Heavy libraries
+Unused images
+
+Verify:
+
+Fast load.
+
+---
+
+## 19. Accessibility Improvements
+
+Ensure:
+
+Buttons accessible
+Forms labeled
+Nav keyboard usable
+Color contrast sufficient
+
+---
+
+# PHASE 7 — NICE IMPROVEMENTS
+
+Optional but valuable.
+
+---
+
+## 20. Add Global Markets Section Improvement
+
+Instead of separate menu:
+
+Move into:
+
+About or Services.
+
+Use:
+
+Map visual
+Regions served
+
+---
+
+## 21. Improve Trust Section
+
+Add:
+
+Why MCG section:
+
+Senior advisors
+Global network
+Execution focus
+Boutique agility
+
+---
+
+## 22. Improve Conversion Path
+
+Ensure:
+
+Every page ends with CTA.
+
+Options:
+
+Book Consultation
+Contact MCG
+
+---
+
+# FINAL DEVELOPER TASK SUMMARY
+
+## Must Fix Now:
+
+✔ Brand consistency
+✔ Navigation cleanup
+✔ CTA hierarchy
+✔ Contact form UX
+✔ Footer structure
+✔ Services consistency
+
+## Should Improve:
+
+✔ Homepage hierarchy
+✔ Insights structure
+✔ Case studies
+✔ Visual spacing
+✔ Mobile UX
+
+## Technical Cleanup:
+
+✔ SEO
+✔ Performance
+✔ Accessibility
+
+---
+
+# FINAL INSTRUCTION TO DEVELOPER
+
+You can literally send this:
+
+*Goal: Simplify navigation, standardize branding, improve credibility UX, and optimize conversion flow while maintaining a premium boutique consulting firm design.*
+
+---
+
+If you want, I can also give you something extremely useful most founders miss:
+
+*MCG Website "Make it Look Like a $50M Consulting Firm" upgrade list*
+
+This is the difference between:
+good website
+and
+serious consulting firm presence.
