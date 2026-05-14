@@ -46,6 +46,16 @@ async function callAI(prompt, systemPrompt = 'You are a helpful business growth 
   }
 }
 
+// Strict variant: throws a 503-tagged error when no API key is configured.
+async function callAIStrict(prompt, systemPrompt) {
+  if (!OPENROUTER_API_KEY) {
+    const err = new Error('AI provider not configured (OPENROUTER_API_KEY missing).');
+    err.status = 503;
+    throw err;
+  }
+  return callAI(prompt, systemPrompt);
+}
+
 // Generate business description
 router.post('/generate-description', authenticateToken, async (req, res) => {
   try {
@@ -280,6 +290,93 @@ router.post('/ask', authenticateToken, async (req, res) => {
     res.json({ content: result });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Predictive close date + win probability for a deal
+router.post('/deal-close-prediction', authenticateToken, async (req, res) => {
+  try {
+    const { deal, history } = req.body;
+    if (!deal) return res.status(400).json({ error: 'deal (object) is required' });
+    const systemPrompt = 'You are a sales operations analyst. Predict deal win probability and a likely close date based on the deal record and history. Return strict JSON: { winProbability (0-1), confidence (low/medium/high), predictedCloseDate (ISO date), drivers, risks, recommendedNextActions }. Output JSON only.';
+    const prompt = `Deal:\n${JSON.stringify(deal, null, 2)}\n\nHistory (last 20):\n${JSON.stringify((history || []).slice(0, 20), null, 2)}\n\nReturn JSON only.`;
+    const result = await callAI(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Territory optimization for sales reps
+router.post('/territory-optimizer', authenticateToken, async (req, res) => {
+  try {
+    const { reps, accounts, constraints } = req.body;
+    if (!Array.isArray(reps) || !Array.isArray(accounts)) {
+      return res.status(400).json({ error: 'reps[] and accounts[] are required' });
+    }
+    const systemPrompt = 'You are a sales territory designer. Propose territory assignments that balance workload, fit (industry/skills), and geographic proximity. Return strict JSON: { assignments: [{ repId, accounts: [accountId,...], rationale }], unassigned, warnings, expectedImpact }. Output JSON only.';
+    const prompt = `Reps:\n${JSON.stringify(reps, null, 2)}\n\nAccounts:\n${JSON.stringify(accounts.slice(0, 100), null, 2)}\n\nConstraints:\n${JSON.stringify(constraints || {}, null, 2)}\n\nReturn JSON only.`;
+    const result = await callAI(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Revenue forecasting agent
+router.post('/revenue-forecast', authenticateToken, async (req, res) => {
+  try {
+    const { period, deals, historicalRevenue, productMix } = req.body;
+    const systemPrompt = 'You are a revenue forecasting analyst. Produce a forecast for the period using the provided open pipeline, historical revenue, and product mix. Return strict JSON: { forecast: { committed, bestCase, worstCase, currency }, breakdownByProduct, breakdownByRep, confidence, drivers, watchItems }. Output JSON only.';
+    const prompt = `Forecast period: ${period || 'next quarter'}\n\nOpen Deals:\n${JSON.stringify((deals || []).slice(0, 100), null, 2)}\n\nHistorical Revenue:\n${JSON.stringify(historicalRevenue || [], null, 2)}\n\nProduct Mix:\n${JSON.stringify(productMix || {}, null, 2)}\n\nReturn JSON only.`;
+    const result = await callAI(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Apply pass 4 backlog: workflow automation engine (rules + approvals).
+router.post('/workflow-automation', authenticateToken, async (req, res) => {
+  try {
+    const { triggers, currentRules, goal } = req.body;
+    if (!triggers && !currentRules && !goal) {
+      return res.status(400).json({ error: 'triggers, currentRules, or goal is required' });
+    }
+    const systemPrompt = 'You are a workflow automation designer for CRM/sales operations. Propose a rules + approvals workflow based on inputs. Return strict JSON: { rules: [{ when, conditions, action, requiresApproval, approvers }], approvalChain, riskNotes, kpis }. Output JSON only.';
+    const prompt = `Goal: ${goal || 'Automate routine sales operations'}\n\nTriggers:\n${JSON.stringify(triggers || [], null, 2)}\n\nExisting rules:\n${JSON.stringify(currentRules || [], null, 2)}\n\nReturn JSON only.`;
+    const result = await callAIStrict(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message });
+  }
+});
+
+// Apply pass 4 backlog: commission tracking on deals/payments.
+router.post('/commission-tracking', authenticateToken, async (req, res) => {
+  try {
+    const { plan, deals, payments } = req.body;
+    if (!plan) return res.status(400).json({ error: 'plan (object) is required' });
+    const systemPrompt = 'You are a commission accounting analyst. Compute expected commissions per rep based on the plan, won deals, and confirmed payments. Return strict JSON: { byRep: [{ repId, name, accruedCommission, paidCommission, dealsCount }], totals, anomalies, audit_trail_notes }. Output JSON only.';
+    const prompt = `Plan:\n${JSON.stringify(plan, null, 2)}\n\nDeals:\n${JSON.stringify((deals || []).slice(0, 100), null, 2)}\n\nPayments:\n${JSON.stringify((payments || []).slice(0, 100), null, 2)}\n\nReturn JSON only.`;
+    const result = await callAIStrict(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message });
+  }
+});
+
+// Apply pass 4 backlog: predictive customer churn (separate from deal close).
+router.post('/customer-churn-prediction', authenticateToken, async (req, res) => {
+  try {
+    const { customer, usage, supportHistory, payments } = req.body;
+    if (!customer) return res.status(400).json({ error: 'customer (object) is required' });
+    const systemPrompt = 'You are a customer success analyst. Predict the customer churn risk based on usage, support, and payment history. Return strict JSON: { churnRisk (0-1), confidence (low/medium/high), drivers, earlyWarnings, recommendedActions, retentionPlays }. Output JSON only.';
+    const prompt = `Customer:\n${JSON.stringify(customer, null, 2)}\n\nUsage:\n${JSON.stringify(usage || [], null, 2)}\n\nSupport history:\n${JSON.stringify((supportHistory || []).slice(0, 50), null, 2)}\n\nPayments:\n${JSON.stringify((payments || []).slice(0, 50), null, 2)}\n\nReturn JSON only.`;
+    const result = await callAIStrict(prompt, systemPrompt);
+    res.json({ content: result });
+  } catch (err) {
+    res.status(err.status || 500).json({ error: err.message });
   }
 });
 

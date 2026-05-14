@@ -17,6 +17,7 @@ import Social from './pages/Social';
 import Analytics from './pages/Analytics';
 import Notifications from './pages/Notifications';
 import AIAssistant from './pages/AIAssistant';
+import AISales from './pages/AISales';
 import SEO from './pages/SEO';
 
 // New admin pages (consulting)
@@ -115,6 +116,7 @@ export default function App() {
       <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
       <Route path="/admin/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/admin/ai" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
+      <Route path="/admin/ai-sales" element={<ProtectedRoute><AISales /></ProtectedRoute>} />
       <Route path="/admin/seo" element={<ProtectedRoute><SEO /></ProtectedRoute>} />
 
       {/* New consulting admin routes */}

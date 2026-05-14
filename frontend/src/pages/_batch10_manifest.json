@@ -1,0 +1,25 @@
+{
+  "marker": "// === Batch 10 Gaps & Frontend Mounts ===",
+  "project": "muhittin",
+  "items": [
+    "<Route path=\"/batch10/cf-real-time-meeting-transcription-action-item\" element={<CfRealTimeMeetingTranscriptionActionItem />} />",
+    "<Route path=\"/batch10/cf-territory-quota-planner-with-simulation\" element={<CfTerritoryQuotaPlannerWithSimulation />} />",
+    "<Route path=\"/batch10/cf-visual-workflow-builder-backed-by-existing\" element={<CfVisualWorkflowBuilderBackedByExisting />} />",
+    "<Route path=\"/batch10/cf-salesforce-hubspot-pipedrive-bi-directional-sync\" element={<CfSalesforceHubspotPipedriveBiDirectionalSync />} />",
+    "<Route path=\"/batch10/cf-e-signature-integration-with-proposal-templating\" element={<CfESignatureIntegrationWithProposalTemplating />} />",
+    "<Route path=\"/batch10/cf-competitive-win-loss-intelligence-pattern-miner\" element={<CfCompetitiveWinLossIntelligencePatternMiner />} />",
+    "<Route path=\"/batch10/gap-already-broad-remaining-gaps\" element={<GapAlreadyBroadRemainingGaps />} />",
+    "<Route path=\"/batch10/gap-no-vision-based-document-parsing\" element={<GapNoVisionBasedDocumentParsing />} />",
+    "<Route path=\"/batch10/gap-no-multilingual-content-generation-pipeline\" element={<GapNoMultilingualContentGenerationPipeline />} />",
+    "<Route path=\"/batch10/gap-no-real-time-meeting-transcription-action\" element={<GapNoRealTimeMeetingTranscriptionAction />} />",
+    "<Route path=\"/batch10/gap-no-competitor-win-loss-pattern-miner\" element={<GapNoCompetitorWinLossPatternMiner />} />",
+    "<Route path=\"/batch10/gap-no-content-moderation-across-user-generated\" element={<GapNoContentModerationAcrossUserGenerated />} />",
+    "<Route path=\"/batch10/gap-no-territory-quota-management-despite-optimizer\" element={<GapNoTerritoryQuotaManagementDespiteOptimizer />} />",
+    "<Route path=\"/batch10/gap-no-commission-calc-ui-tied-to\" element={<GapNoCommissionCalcUiTiedTo />} />",
+    "<Route path=\"/batch10/gap-no-salesforce-hubspot-pipedrive-sync-connector\" element={<GapNoSalesforceHubspotPipedriveSyncConnector />} />",
+    "<Route path=\"/batch10/gap-no-workflow-visual-builder-despite-workflow\" element={<GapNoWorkflowVisualBuilderDespiteWorkflow />} />",
+    "<Route path=\"/batch10/gap-no-co-editing-commenting-on-deals\" element={<GapNoCoEditingCommentingOnDeals />} />",
+    "<Route path=\"/batch10/gap-no-e-signature-integration\" element={<GapNoESignatureIntegration />} />",
+    "<Route path=\"/batch10/gap-no-webhooks-for-partner-integrations\" element={<GapNoWebhooksForPartnerIntegrations />} />"
+  ]
+}
