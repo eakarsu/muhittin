@@ -36,6 +36,7 @@ import AdminMeetings from './pages/AdminMeetings';
 import AdminOnboarding from './pages/AdminOnboarding';
 import AdminCaseStudies from './pages/AdminCaseStudies';
 import AdminIndustries from './pages/AdminIndustries';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 // Public pages
 import PublicHome from './pages/public/Home';
@@ -135,6 +136,8 @@ export default function App() {
       <Route path="/admin/onboarding" element={<ProtectedRoute><AdminOnboarding /></ProtectedRoute>} />
       <Route path="/admin/case-studies" element={<ProtectedRoute><AdminCaseStudies /></ProtectedRoute>} />
       <Route path="/admin/industries" element={<ProtectedRoute><AdminIndustries /></ProtectedRoute>} />
+      <Route path="/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
+      <Route path="/admin/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

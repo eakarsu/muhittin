@@ -46,6 +46,9 @@ app.use('/api/case-studies', require('./routes/case-studies'));
 app.use('/api/industries', require('./routes/industries'));
 app.use('/api/search', require('./routes/search'));
 
+// Custom Views feature (must be mounted before any 404 fallback)
+app.use('/api/custom-views', require('./routes/customViews'));
+
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.listen(PORT, () => {
