@@ -17,6 +17,7 @@ import Social from './pages/Social';
 import Analytics from './pages/Analytics';
 import Notifications from './pages/Notifications';
 import AIAssistant from './pages/AIAssistant';
+import AISales from './pages/AISales';
 import SEO from './pages/SEO';
 
 // New admin pages (consulting)
@@ -35,6 +36,7 @@ import AdminMeetings from './pages/AdminMeetings';
 import AdminOnboarding from './pages/AdminOnboarding';
 import AdminCaseStudies from './pages/AdminCaseStudies';
 import AdminIndustries from './pages/AdminIndustries';
+import CustomViewsPage from './pages/CustomViewsPage';
 
 // Public pages
 import PublicHome from './pages/public/Home';
@@ -115,6 +117,7 @@ export default function App() {
       <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
       <Route path="/admin/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       <Route path="/admin/ai" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
+      <Route path="/admin/ai-sales" element={<ProtectedRoute><AISales /></ProtectedRoute>} />
       <Route path="/admin/seo" element={<ProtectedRoute><SEO /></ProtectedRoute>} />
 
       {/* New consulting admin routes */}
@@ -133,6 +136,8 @@ export default function App() {
       <Route path="/admin/onboarding" element={<ProtectedRoute><AdminOnboarding /></ProtectedRoute>} />
       <Route path="/admin/case-studies" element={<ProtectedRoute><AdminCaseStudies /></ProtectedRoute>} />
       <Route path="/admin/industries" element={<ProtectedRoute><AdminIndustries /></ProtectedRoute>} />
+      <Route path="/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
+      <Route path="/admin/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

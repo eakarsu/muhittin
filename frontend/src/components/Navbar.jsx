@@ -54,6 +54,8 @@ export default function Navbar() {
   const systemLinks = [
     { to: '/admin/notifications', icon: '🔔', label: `Notifications${unread > 0 ? ` (${unread})` : ''}` },
     { to: '/admin/ai', icon: '🤖', label: 'AI Assistant' },
+    { to: '/admin/ai-sales', icon: '📊', label: 'AI Sales' },
+    { to: '/custom-views', icon: '👁️', label: 'Views' },
   ];
 
   const handleLogout = () => { logout(); navigate('/login'); };
