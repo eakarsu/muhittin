@@ -63,6 +63,9 @@ import IndustryDetail from './pages/public/IndustryDetail';
 import WhyMCGDetail from './pages/public/WhyMCGDetail';
 import MethodologyDetail from './pages/public/MethodologyDetail';
 
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
 function ProtectedRoute({ children }) {
   const { token } = useAuth();
   if (!token) return <Navigate to="/login" />;
@@ -77,6 +80,9 @@ function ProtectedRoute({ children }) {
 export default function App() {
   return (
     <Routes>
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
       {/* Public website routes */}
       <Route path="/" element={<PublicLayout><PublicHome /></PublicLayout>} />
       <Route path="/about" element={<PublicLayout><About /></PublicLayout>} />
