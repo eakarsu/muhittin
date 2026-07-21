@@ -6,7 +6,7 @@ router.get('/', async (req, res) => {
     const { q } = req.query;
     if (!q || q.trim().length < 2) return res.json([]);
 
-    const term = `%${q.trim()}%`;
+    const term = `%${q.trim().slice(0, 100)}%`;
 
     const results = await Promise.all([
       pool.query(
@@ -21,14 +21,14 @@ router.get('/', async (req, res) => {
         `SELECT id, title, slug, industry, 'case_study' as type,
            SUBSTRING(challenge, 1, 150) as summary
          FROM case_studies
-         WHERE title ILIKE $1 OR industry ILIKE $1 OR challenge ILIKE $1 OR result ILIKE $1 OR approach ILIKE $1
+         WHERE published = true AND (title ILIKE $1 OR industry ILIKE $1 OR challenge ILIKE $1 OR result ILIKE $1 OR approach ILIKE $1)
          LIMIT 10`,
         [term]
       ),
       pool.query(
         `SELECT id, name as title, slug, description as summary, 'industry' as type
          FROM industries
-         WHERE name ILIKE $1 OR description ILIKE $1 OR challenges ILIKE $1 OR approach ILIKE $1
+         WHERE published = true AND (name ILIKE $1 OR description ILIKE $1 OR challenges ILIKE $1 OR approach ILIKE $1)
          LIMIT 10`,
         [term]
       ),

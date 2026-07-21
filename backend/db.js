@@ -1,18 +1,12 @@
 const { Pool } = require('pg');
-require('dotenv').config({ path: __dirname + '/../.env' });
+const { getDatabaseConfig } = require('./config');
 
-let pool;
-
-if (process.env.DATABASE_URL) {
-  pool = new Pool({ connectionString: process.env.DATABASE_URL });
-} else {
-  pool = new Pool({
-    user: process.env.DB_USER || 'erolakarsu',
-    password: process.env.DB_PASSWORD || '',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME || 'muhittin_platform'
-  });
-}
+const { databaseUrl } = getDatabaseConfig();
+const pool = new Pool({
+  connectionString: databaseUrl,
+  max: Number(process.env.DB_POOL_MAX || 10),
+  connectionTimeoutMillis: Number(process.env.DB_CONNECT_TIMEOUT_MS || 5000),
+  idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 30000),
+});
 
 module.exports = pool;

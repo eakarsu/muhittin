@@ -1,20 +1,36 @@
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
-require('dotenv').config({ path: __dirname + '/../.env' });
+const { getDatabaseConfig } = require('./config');
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'erolakarsu',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME || 'muhittin_platform'
+  connectionString: getDatabaseConfig().databaseUrl,
 });
 
 async function seed() {
+  if (process.env.NODE_ENV === 'production' || process.env.CONFIRM_DESTRUCTIVE_RESET !== 'muhittin_platform') {
+    throw new Error('Destructive demo reset refused. Set CONFIRM_DESTRUCTIVE_RESET=muhittin_platform outside production to continue.');
+  }
   const client = await pool.connect();
   try {
     // Drop tables
     await client.query(`
+      DROP TABLE IF EXISTS opportunity_events CASCADE;
+      DROP TABLE IF EXISTS schema_migrations CASCADE;
+      DROP TABLE IF EXISTS onboarding_workflows CASCADE;
+      DROP TABLE IF EXISTS meetings CASCADE;
+      DROP TABLE IF EXISTS opportunities CASCADE;
+      DROP TABLE IF EXISTS orders CASCADE;
+      DROP TABLE IF EXISTS payments CASCADE;
+      DROP TABLE IF EXISTS deals CASCADE;
+      DROP TABLE IF EXISTS consultations CASCADE;
+      DROP TABLE IF EXISTS service_packages CASCADE;
+      DROP TABLE IF EXISTS candidates CASCADE;
+      DROP TABLE IF EXISTS partners CASCADE;
+      DROP TABLE IF EXISTS companies CASCADE;
+      DROP TABLE IF EXISTS contacts CASCADE;
+      DROP TABLE IF EXISTS insights CASCADE;
+      DROP TABLE IF EXISTS case_studies CASCADE;
+      DROP TABLE IF EXISTS industries CASCADE;
       DROP TABLE IF EXISTS keyword_rankings CASCADE;
       DROP TABLE IF EXISTS seo_audits CASCADE;
       DROP TABLE IF EXISTS analytics_events CASCADE;
@@ -235,15 +251,17 @@ async function seed() {
     `);
 
     // Seed users
-    const hashedPassword = await bcrypt.hash('demo123', 10);
+    const demoPassword = process.env.DEMO_ADMIN_PASSWORD;
+    if (!demoPassword || demoPassword.length < 12) throw new Error('DEMO_ADMIN_PASSWORD must contain at least 12 characters.');
+    const hashedPassword = await bcrypt.hash(demoPassword, 12);
     await client.query(`
       INSERT INTO users (email, password, name, phone, role) VALUES
-      ('demo@muhittin.com', '${hashedPassword}', 'Demo User', '555-0100', 'owner'),
-      ('sarah@muhittin.com', '${hashedPassword}', 'Sarah Johnson', '555-0101', 'owner'),
-      ('mike@muhittin.com', '${hashedPassword}', 'Mike Chen', '555-0102', 'owner'),
-      ('lisa@muhittin.com', '${hashedPassword}', 'Lisa Martinez', '555-0103', 'manager'),
-      ('tom@muhittin.com', '${hashedPassword}', 'Tom Wilson', '555-0104', 'staff');
-    `);
+      ('demo@muhittin.com', $1, 'Demo User', '555-0100', 'owner'),
+      ('sarah@muhittin.com', $1, 'Sarah Johnson', '555-0101', 'owner'),
+      ('mike@muhittin.com', $1, 'Mike Chen', '555-0102', 'owner'),
+      ('lisa@muhittin.com', $1, 'Lisa Martinez', '555-0103', 'manager'),
+      ('tom@muhittin.com', $1, 'Tom Wilson', '555-0104', 'staff');
+    `, [hashedPassword]);
 
     // Seed businesses — 15 per category, 8 categories = 120 businesses (REAL TX businesses)
     // Healthcare (1-15)
@@ -793,7 +811,7 @@ async function seed() {
 
     console.log('Database seeded successfully!');
   } catch (err) {
-    console.error('Seed error:', err);
+    console.error(`Seed error: ${err.message}`);
     throw err;
   } finally {
     client.release();
@@ -801,4 +819,11 @@ async function seed() {
   }
 }
 
-seed();
+if (require.main === module) {
+  seed().catch((error) => {
+    console.error(`Demo reset failed: ${error.message}`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { seed };

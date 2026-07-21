@@ -1,78 +1,86 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '../context/AuthContext';
 import SortableTable from '../components/SortableTable';
 
-const statusColors = { new: 'badge-blue', reviewing: 'badge-yellow', qualified: 'badge-green', closed: 'badge-gray' };
+const statusColors = { new: 'badge-blue', reviewing: 'badge-yellow', qualified: 'badge-green', proposal: 'badge-yellow', negotiation: 'badge-orange', converted: 'badge-green', closed: 'badge-gray' };
+const transitions = {
+  new: ['reviewing', 'qualified', 'closed'],
+  reviewing: ['qualified', 'closed'],
+  qualified: ['proposal', 'closed'],
+  proposal: ['negotiation', 'closed'],
+  negotiation: ['converted', 'closed'],
+  converted: [],
+  closed: [],
+};
 
 export default function AdminOpportunities() {
-  const { api } = useAuth();
+  const { api, user } = useAuth();
   const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-
+  const [events, setEvents] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({});
+  const [loading, setLoading] = useState(true);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiResult, setAiResult] = useState('');
+  const canTransition = ['owner', 'admin', 'manager'].includes(user?.role);
+
+  const load = () => api('/api/opportunities').then(setItems).finally(() => setLoading(false));
+  const loadEvents = id => api(`/api/opportunities/${id}/events`).then(setEvents);
+  useEffect(() => { load().catch(console.error); }, []);
+
+  const openOpportunity = item => {
+    setSelected(item);
+    setEvents([]);
+    setAiResult('');
+    loadEvents(item.id).catch(console.error);
+  };
+
+  const handleStatusChange = async status => {
+    const message = status === 'closed' ? 'Closing note (required)' : 'Review note (optional)';
+    const note = window.prompt(message, '') ?? null;
+    if (note === null || (status === 'closed' && !note.trim())) return;
+    try {
+      const updated = await api(`/api/opportunities/${selected.id}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status, note }),
+      });
+      setSelected(current => ({ ...current, ...updated }));
+      await Promise.all([load(), loadEvents(selected.id)]);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   const assessOpportunity = async () => {
-    setAiLoading(true); setAiResult('');
+    setAiLoading(true);
+    setAiResult('');
     try {
       const data = await api('/api/ai/opportunity-assess', {
         method: 'POST',
-        body: JSON.stringify({ company_name: selected.company_name, opportunity_type: selected.opportunity_type, region: selected.region, budget_range: selected.budget_range, description: selected.description })
+        body: JSON.stringify({ company_name: selected.company_name, opportunity_type: selected.opportunity_type, region: selected.region, budget_range: selected.budget_range, description: selected.description }),
       });
       setAiResult(data.content);
-    } catch (err) { setAiResult('Error: ' + err.message); }
-    setAiLoading(false);
+    } catch (error) {
+      setAiResult(`Error: ${error.message}`);
+    } finally {
+      setAiLoading(false);
+    }
   };
 
-  const load = () => {
-    api('/api/opportunities').then(setItems).catch(console.error).finally(() => setLoading(false));
-  };
-
-  useEffect(() => { load(); }, []);
-
-  const handleCreate = () => {
-    setForm({ company_name: '', contact_name: '', email: '', phone: '', opportunity_type: '', description: '', region: '', budget_range: '', status: 'new' });
-    setShowForm(true); setSelected(null);
-  };
-  const handleEdit = () => { setForm({ ...selected }); setShowForm(true); };
-  const handleSave = async () => {
-    try {
-      if (form.id) await api(`/api/opportunities/${form.id}`, { method: 'PUT', body: JSON.stringify(form) });
-      else await api('/api/opportunities', { method: 'POST', body: JSON.stringify(form) });
-      setShowForm(false); setSelected(null); setLoading(true); load();
-    } catch (err) { alert(err.message); }
-  };
-  const handleDelete = async () => {
-    if (!confirm('Delete this opportunity?')) return;
-    try { await api(`/api/opportunities/${selected.id}`, { method: 'DELETE' }); setSelected(null); setLoading(true); load(); } catch (err) { alert(err.message); }
-  };
-  const handleStatusChange = async (id, status) => {
-    try {
-      await api(`/api/opportunities/${id}`, { method: 'PUT', body: JSON.stringify({ ...selected, status }) });
-      load();
-      if (selected) setSelected({ ...selected, status });
-    } catch (err) { alert(err.message); }
-  };
-
-  if (loading) return <div className="loading"><div className="spinner"></div></div>;
+  if (loading) return <div className="loading"><div className="spinner" /></div>;
 
   return (
     <div>
       <div className="page-header">
-        <div><h1>Opportunities</h1><p className="subtitle">{items.length} opportunities</p></div>
-        <button className="btn btn-primary" onClick={handleCreate}>+ New Opportunity</button>
+        <div><h1>Opportunity Review</h1><p className="subtitle">{items.length} submissions · status changes are append-only audit events</p></div>
       </div>
 
       <SortableTable
         data={items}
-        searchPlaceholder="Search all opportunity fields..."
-        onRowClick={item => { setSelected(item); setAiResult(''); }}
+        searchPlaceholder="Search opportunities..."
+        onRowClick={openOpportunity}
         columns={[
-          { key: 'company_name', label: 'Company', render: item => item.company_name, style: { fontWeight: 600 } },
+          { key: 'company_name', label: 'Company', style: { fontWeight: 600 } },
           { key: 'contact_name', label: 'Contact', render: item => <>{item.contact_name}<br /><span style={{ fontSize: 11, color: '#888' }}>{item.email}</span></> },
           { key: 'opportunity_type', label: 'Type' },
           { key: 'region', label: 'Region' },
@@ -81,9 +89,9 @@ export default function AdminOpportunities() {
         ]}
       />
 
-      {selected && !showForm && (
+      {selected && (
         <div className="modal-overlay" onClick={() => setSelected(null)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal" onClick={event => event.stopPropagation()}>
             <h2>{selected.company_name}</h2>
             <div className="detail-grid">
               <div className="detail-row"><span className="detail-label">Contact</span><span className="detail-value">{selected.contact_name}</span></div>
@@ -93,60 +101,32 @@ export default function AdminOpportunities() {
               <div className="detail-row"><span className="detail-label">Description</span><span className="detail-value">{selected.description}</span></div>
               <div className="detail-row"><span className="detail-label">Region</span><span className="detail-value">{selected.region}</span></div>
               <div className="detail-row"><span className="detail-label">Budget</span><span className="detail-value">{selected.budget_range}</span></div>
+              <div className="detail-row"><span className="detail-label">Consent recorded</span><span className="detail-value">{selected.consent_recorded_at ? new Date(selected.consent_recorded_at).toLocaleString() : 'Legacy record'}</span></div>
               <div className="detail-row"><span className="detail-label">Status</span><span className="detail-value"><span className={`badge ${statusColors[selected.status] || 'badge-gray'}`}>{selected.status}</span></span></div>
             </div>
-            <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
-              {selected.status === 'new' && <button className="btn btn-sm" style={{ background: '#ffc107', color: '#000' }} onClick={() => handleStatusChange(selected.id, 'reviewing')}>Start Review</button>}
-              {(selected.status === 'new' || selected.status === 'reviewing') && <button className="btn btn-sm btn-success" onClick={() => handleStatusChange(selected.id, 'qualified')}>Qualify</button>}
-              {selected.status !== 'closed' && <button className="btn btn-sm btn-secondary" onClick={() => handleStatusChange(selected.id, 'closed')}>Close</button>}
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <button className="btn btn-primary" onClick={assessOpportunity} disabled={aiLoading}>{aiLoading ? 'Assessing...' : '🤖 AI Assess Opportunity'}</button>
-              {aiResult && (
-                <div style={{ marginTop: 12, padding: 12, background: '#f0f7ff', borderRadius: 8, fontSize: 13, maxHeight: 300, overflow: 'auto' }}>
-                  <ReactMarkdown>{aiResult}</ReactMarkdown>
-                </div>
-              )}
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setSelected(null)}>Close</button>
-              <button className="btn btn-primary" onClick={handleEdit}>Edit</button>
-              <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {showForm && (
-        <div className="modal-overlay" onClick={() => setShowForm(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
-            <h2>{form.id ? 'Edit Opportunity' : 'New Opportunity'}</h2>
-            <div className="form-row">
-              <div className="form-group"><label>Company Name</label><input value={form.company_name || ''} onChange={e => setForm({ ...form, company_name: e.target.value })} /></div>
-              <div className="form-group"><label>Contact Name</label><input value={form.contact_name || ''} onChange={e => setForm({ ...form, contact_name: e.target.value })} /></div>
-            </div>
-            <div className="form-row">
-              <div className="form-group"><label>Email</label><input value={form.email || ''} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
-              <div className="form-group"><label>Phone</label><input value={form.phone || ''} onChange={e => setForm({ ...form, phone: e.target.value })} /></div>
-            </div>
-            <div className="form-row">
-              <div className="form-group"><label>Opportunity Type</label><input value={form.opportunity_type || ''} onChange={e => setForm({ ...form, opportunity_type: e.target.value })} /></div>
-              <div className="form-group"><label>Region</label><input value={form.region || ''} onChange={e => setForm({ ...form, region: e.target.value })} /></div>
-            </div>
-            <div className="form-group"><label>Description</label><textarea value={form.description || ''} onChange={e => setForm({ ...form, description: e.target.value })} /></div>
-            <div className="form-row">
-              <div className="form-group"><label>Budget Range</label><input value={form.budget_range || ''} onChange={e => setForm({ ...form, budget_range: e.target.value })} placeholder="e.g. $50k-$100k" /></div>
-              <div className="form-group"><label>Status</label>
-                <select value={form.status || 'new'} onChange={e => setForm({ ...form, status: e.target.value })}>
-                  <option value="new">New</option><option value="reviewing">Reviewing</option>
-                  <option value="qualified">Qualified</option><option value="closed">Closed</option>
-                </select>
+            {canTransition && transitions[selected.status]?.length > 0 && (
+              <div style={{ display: 'flex', gap: 6, marginTop: 16, flexWrap: 'wrap' }}>
+                {transitions[selected.status].map(status => <button key={status} className="btn btn-sm btn-secondary" onClick={() => handleStatusChange(status)}>Move to {status}</button>)}
               </div>
+            )}
+
+            <div style={{ marginTop: 16 }}>
+              <button className="btn btn-primary" onClick={assessOpportunity} disabled={aiLoading}>{aiLoading ? 'Assessing...' : 'AI assessment'}</button>
+              <p style={{ fontSize: 12, color: '#64748b' }}>AI output is advisory. A human reviewer remains responsible for every status decision.</p>
+              {aiResult && <div style={{ marginTop: 12, padding: 12, background: '#f0f7ff', borderRadius: 8, fontSize: 13, maxHeight: 300, overflow: 'auto' }}><ReactMarkdown>{aiResult}</ReactMarkdown></div>}
             </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={() => setShowForm(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleSave}>Save</button>
+
+            <h3 style={{ marginTop: 20 }}>Audit history</h3>
+            <div style={{ maxHeight: 220, overflowY: 'auto' }}>
+              {events.length === 0 ? <p className="subtitle">No events available.</p> : events.map(event => (
+                <div key={event.id} className="detail-row">
+                  <span className="detail-label">{new Date(event.created_at).toLocaleString()}</span>
+                  <span className="detail-value">{event.from_status ? `${event.from_status} → ` : ''}{event.to_status} · {event.actor_role}{event.note ? ` · ${event.note}` : ''}</span>
+                </div>
+              ))}
             </div>
+            <div className="modal-actions"><button className="btn btn-secondary" onClick={() => setSelected(null)}>Close</button></div>
           </div>
         </div>
       )}

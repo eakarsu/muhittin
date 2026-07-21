@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter - uses Ethereal (test) by default, configure SMTP in .env for production
+// Email is opt-in. Missing SMTP configuration never triggers an external test-account request.
 let transporter = null;
 
 async function getTransporter() {
@@ -16,35 +16,37 @@ async function getTransporter() {
         pass: process.env.SMTP_PASS
       }
     });
-  } else {
-    // Use Ethereal for development/testing
-    const testAccount = await nodemailer.createTestAccount();
-    transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: { user: testAccount.user, pass: testAccount.pass }
-    });
-  }
+  } else return null;
   return transporter;
 }
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@multiverse-consulting.com';
 const FIRM_NAME = 'Multiverse Consulting Group';
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
 async function sendEmail(to, subject, html) {
   try {
     const t = await getTransporter();
+    if (!t) return { skipped: true, reason: 'SMTP is not configured' };
+    if (typeof to !== 'string' || to.length > 255 || /[\r\n]/.test(to)) throw new TypeError('Invalid email recipient');
+    if (typeof subject !== 'string' || subject.length > 200 || /[\r\n]/.test(subject)) throw new TypeError('Invalid email subject');
     const info = await t.sendMail({
       from: `"${FIRM_NAME}" <${FROM_EMAIL}>`,
       to,
       subject,
-      html
+      html,
+      disableFileAccess: true,
+      disableUrlAccess: true,
     });
     console.log(`Email sent: ${info.messageId}`);
-    if (info.messageId && !process.env.SMTP_HOST) {
-      console.log(`Preview: ${nodemailer.getTestMessageUrl(info)}`);
-    }
     return info;
   } catch (err) {
     console.error('Email error:', err.message);
@@ -119,7 +121,7 @@ async function sendOpportunityConfirmation(to, contactName) {
         <h1 style="color: #14b8a6; margin: 0; font-size: 24px;">${FIRM_NAME}</h1>
       </div>
       <div style="padding: 32px; background: #ffffff;">
-        <h2 style="color: #0f172a;">Thank You, ${contactName}</h2>
+        <h2 style="color: #0f172a;">Thank You, ${escapeHtml(contactName)}</h2>
         <p style="color: #475569; line-height: 1.6;">We've received your opportunity submission and our team will review it promptly.</p>
         <p style="color: #475569; line-height: 1.6;">If the opportunity aligns with our expertise, we'll reach out within 48 hours to discuss next steps.</p>
         <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;">
@@ -175,6 +177,7 @@ async function sendMeetingPreparation(to, name, title, date, time) {
 }
 
 module.exports = {
+  escapeHtml,
   sendEmail,
   sendConsultationConfirmation,
   sendCandidateWelcome,

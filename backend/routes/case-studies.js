@@ -1,28 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken, optionalAuthenticateToken } = require('../middleware/auth');
 
 // Public: List published case studies (or all if authenticated with all=true)
-router.get('/', async (req, res) => {
+router.get('/', optionalAuthenticateToken, async (req, res) => {
   try {
     const { industry, search, all } = req.query;
     const conditions = [];
     const params = [];
 
-    // If all=true and request has valid auth token, skip published filter
-    let showAll = false;
-    if (all === 'true') {
-      const authHeader = req.headers['authorization'];
-      const token = authHeader && authHeader.split(' ')[1];
-      if (token) {
-        try {
-          const jwt = require('jsonwebtoken');
-          jwt.verify(token, process.env.JWT_SECRET);
-          showAll = true;
-        } catch (e) { /* invalid token, show published only */ }
-      }
-    }
+    const showAll = all === 'true' && req.user && ['owner', 'admin', 'manager', 'staff'].includes(req.user.role);
 
     if (!showAll) {
       conditions.push('published = true');

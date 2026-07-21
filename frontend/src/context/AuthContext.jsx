@@ -4,14 +4,14 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
 
   useEffect(() => {
     if (token) {
       fetch('/api/auth/me', { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(u => setUser(u))
-        .catch(() => { setToken(null); localStorage.removeItem('token'); });
+        .catch(() => { setToken(null); setUser(null); sessionStorage.removeItem('token'); });
     }
   }, [token]);
 
@@ -23,28 +23,14 @@ export function AuthProvider({ children }) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
-    localStorage.setItem('token', data.token);
-    setToken(data.token);
-    setUser(data.user);
-    return data;
-  };
-
-  const register = async (name, email, password, phone) => {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, phone })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
-    localStorage.setItem('token', data.token);
+    sessionStorage.setItem('token', data.token);
     setToken(data.token);
     setUser(data.user);
     return data;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     setToken(null);
     setUser(null);
   };
@@ -58,13 +44,16 @@ export function AuthProvider({ children }) {
         ...options.headers
       }
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 401) logout();
+      throw new Error(data.error || 'Request failed');
+    }
     return data;
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, api }}>
+    <AuthContext.Provider value={{ user, token, login, logout, api }}>
       {children}
     </AuthContext.Provider>
   );

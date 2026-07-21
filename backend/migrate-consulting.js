@@ -1,12 +1,8 @@
 const { Pool } = require('pg');
-require('dotenv').config({ path: __dirname + '/../.env' });
+const { getDatabaseConfig } = require('./config');
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'erolakarsu',
-  password: process.env.DB_PASSWORD || '',
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 5432,
-  database: process.env.DB_NAME || 'muhittin_platform'
+  connectionString: getDatabaseConfig().databaseUrl,
 });
 
 async function migrate() {
@@ -307,6 +303,11 @@ async function migrate() {
     await client.query('COMMIT');
     console.log('\nAll 15 tables created successfully.\n');
 
+    if (process.env.SEED_CONSULTING_DEMO !== 'true') {
+      console.log('Consulting demo data was not requested; schema-only migration complete.');
+      return;
+    }
+
     // -------------------------------------------------------
     // SEED DATA
     // -------------------------------------------------------
@@ -533,14 +534,19 @@ async function migrate() {
     console.log('\nConsulting migration completed successfully.');
 
   } catch (err) {
-    await client.query('ROLLBACK');
-    console.error('Migration failed:', err.message);
-    console.error(err.stack);
-    process.exit(1);
+    try { await client.query('ROLLBACK'); } catch {}
+    throw err;
   } finally {
     client.release();
     await pool.end();
   }
 }
 
-migrate();
+if (require.main === module) {
+  migrate().catch((error) => {
+    console.error(`Consulting migration failed: ${error.message}`);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { migrate };
