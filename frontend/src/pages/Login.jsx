@@ -35,6 +35,15 @@ export default function Login() {
             <label htmlFor="staff-password">Password</label>
             <input id="staff-password" type="password" value={password} onChange={event => setPassword(event.target.value)} autoComplete="current-password" maxLength="128" required />
           </div>
+          <button
+            type="button"
+            onClick={() => { setEmail(import.meta.env.VITE_DEMO_EMAIL || ''); setPassword(import.meta.env.VITE_DEMO_PASSWORD || ''); }}
+            disabled={!import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD}
+            aria-label="Auto Fill Demo Credentials"
+            style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
+          >
+            Auto Fill Demo Credentials
+          </button>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 12, fontSize: 14 }}>Sign In</button>
         </form>
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: '#666' }}>Accounts are provisioned by an administrator. Public registration is disabled by default.</p>
