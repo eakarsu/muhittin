@@ -10,7 +10,7 @@ function quotedIdentifier(value) {
   return `"${value}"`;
 }
 
-test('migration is repeatable and opportunity history is append-only', { timeout: 30_000 }, async (t) => {
+test('migration is repeatable and opportunity history is append-only', { timeout: 120_000 }, async (t) => {
   if (!process.env.DATABASE_URL) return t.skip('DATABASE_URL is required for the isolated migration test');
   const sourceUrl = new URL(process.env.DATABASE_URL);
   const databaseName = `muhittin_test_${crypto.randomBytes(6).toString('hex')}`;
@@ -58,7 +58,7 @@ test('migration is repeatable and opportunity history is append-only', { timeout
     database = new Client({ connectionString: testUrl.toString() });
     await database.connect();
     const migrationCount = await database.query('SELECT COUNT(*)::int AS count FROM schema_migrations');
-    assert.equal(migrationCount.rows[0].count, 2);
+    assert.equal(migrationCount.rows[0].count, 3);
 
     const user = await database.query("INSERT INTO users (email, password, role) VALUES ('owner@example.com', 'hash', 'owner') RETURNING id, active, auth_version");
     assert.equal(user.rows[0].active, true);

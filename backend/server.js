@@ -74,6 +74,7 @@ function createApp({ config = getRuntimeConfig(), database = pool } = {}) {
   app.use('/api/analytics', require('./routes/analytics'));
   app.use('/api/notifications', require('./routes/notifications'));
   app.use('/api/ai', require('./routes/ai'));
+  app.use('/api/runtime-ai', require('./routes/runtimeAi'));
   app.use('/api/seo', require('./routes/seo'));
   app.use('/api/meeting-transcription', require('./routes/meetingTranscription'));
   app.use('/api/territory-planner', require('./routes/territoryPlanner'));

@@ -2,8 +2,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-BACKEND_PORT="${BACKEND_PORT:-3001}"
-FRONTEND_PORT="${FRONTEND_PORT:-3000}"
+set -a
+# shellcheck disable=SC1091
+source "$ROOT/.env"
+set +a
+BACKEND_PORT="${BACKEND_PORT:?BACKEND_PORT is required}"
+FRONTEND_PORT="${FRONTEND_PORT:?FRONTEND_PORT is required}"
+[[ "$BACKEND_PORT" != "$FRONTEND_PORT" ]] || { echo "BACKEND_PORT and FRONTEND_PORT must differ" >&2; exit 1; }
+export BACKEND_PORT FRONTEND_PORT
 
 for command in node curl; do
   command -v "$command" >/dev/null 2>&1 || { echo "$command is required." >&2; exit 1; }

@@ -24,16 +24,24 @@ async function createOwner(environment = process.env) {
   try {
     await client.query('BEGIN');
     await client.query("SELECT pg_advisory_xact_lock(hashtext('muhittin-owner-bootstrap'))");
-    const privileged = await client.query("SELECT 1 FROM users WHERE role IN ('owner', 'admin') LIMIT 1");
-    if (privileged.rowCount) throw new Error('A privileged account already exists; owner bootstrap refused.');
     const passwordHash = await bcrypt.hash(input.password, 12);
-    await client.query(
-      `INSERT INTO users (email, password, name, role, active, auth_version)
-       VALUES ($1, $2, $3, 'owner', TRUE, 0)`,
-      [input.email, passwordHash, input.name],
-    );
+    const existing = await client.query('SELECT id FROM users WHERE email=$1 FOR UPDATE', [input.email]);
+    if (existing.rows[0]) {
+      await client.query(
+        `UPDATE users SET password=$1,name=$2,role='owner',active=TRUE,auth_version=auth_version+1 WHERE id=$3`,
+        [passwordHash, input.name, existing.rows[0].id],
+      );
+    } else {
+      const privileged = await client.query("SELECT 1 FROM users WHERE role IN ('owner', 'admin') LIMIT 1");
+      if (privileged.rowCount) throw new Error('A different privileged account already exists; owner bootstrap refused.');
+      await client.query(
+        `INSERT INTO users (email, password, name, role, active, auth_version)
+         VALUES ($1, $2, $3, 'owner', TRUE, 0)`,
+        [input.email, passwordHash, input.name],
+      );
+    }
     await client.query('COMMIT');
-    console.log('Initial owner account created. Remove the BOOTSTRAP_OWNER_* variables from the environment.');
+    console.log('Configured owner account is ready.');
   } catch (error) {
     try { await client.query('ROLLBACK'); } catch {}
     throw error;
