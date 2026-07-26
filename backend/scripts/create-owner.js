@@ -32,13 +32,20 @@ async function createOwner(environment = process.env) {
         [passwordHash, input.name, existing.rows[0].id],
       );
     } else {
-      const privileged = await client.query("SELECT 1 FROM users WHERE role IN ('owner', 'admin') LIMIT 1");
-      if (privileged.rowCount) throw new Error('A different privileged account already exists; owner bootstrap refused.');
-      await client.query(
-        `INSERT INTO users (email, password, name, role, active, auth_version)
-         VALUES ($1, $2, $3, 'owner', TRUE, 0)`,
-        [input.email, passwordHash, input.name],
-      );
+      const privileged = await client.query("SELECT id FROM users WHERE role IN ('owner', 'admin') ORDER BY id LIMIT 1 FOR UPDATE");
+      if (privileged.rowCount) {
+        if (environment.NODE_ENV === 'production') throw new Error('A different privileged account already exists; owner bootstrap refused.');
+        await client.query(
+          `UPDATE users SET email=$1,password=$2,name=$3,role='owner',active=TRUE,auth_version=auth_version+1 WHERE id=$4`,
+          [input.email, passwordHash, input.name, privileged.rows[0].id],
+        );
+      } else {
+        await client.query(
+          `INSERT INTO users (email, password, name, role, active, auth_version)
+           VALUES ($1, $2, $3, 'owner', TRUE, 0)`,
+          [input.email, passwordHash, input.name],
+        );
+      }
     }
     await client.query('COMMIT');
     console.log('Configured owner account is ready.');

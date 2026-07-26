@@ -94,6 +94,10 @@ for directory in "$ROOT/backend/node_modules" "$ROOT/frontend/node_modules"; do
 done
 
 BACKEND_PORT="$BACKEND_PORT" FRONTEND_PORT="$FRONTEND_PORT" node "$ROOT/backend/scripts/validate-config.js"
+if [[ "${NODE_ENV:-development}" != production && "${ENABLE_DEMO_CREDENTIAL_AUTOFILL:-true}" == true ]]; then
+  npm --prefix "$ROOT/backend" run db:migrate
+  npm --prefix "$ROOT/backend" run db:create-owner
+fi
 node "$ROOT/backend/scripts/check-db.js"
 
 if command -v lsof >/dev/null 2>&1; then
