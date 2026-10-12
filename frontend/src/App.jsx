@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
@@ -79,7 +80,7 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   return (
-    <Routes>
+    <><AIReportLibrary floating /><Routes>
         <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
         <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
 
@@ -146,6 +147,6 @@ export default function App() {
       <Route path="/admin/custom-views" element={<ProtectedRoute><CustomViewsPage /></ProtectedRoute>} />
 
       <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+    </Routes></>
   );
 }

@@ -8,6 +8,9 @@ export default function Login() {
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
+  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
+  const demoAvailable = Boolean(demoEmail && demoPassword);
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -37,13 +40,14 @@ export default function Login() {
           </div>
           <button
             type="button"
-            onClick={() => { setEmail(import.meta.env.VITE_DEMO_EMAIL || ''); setPassword(import.meta.env.VITE_DEMO_PASSWORD || ''); }}
-            disabled={!import.meta.env.VITE_DEMO_EMAIL || !import.meta.env.VITE_DEMO_PASSWORD}
-            aria-label="Auto Fill Demo Credentials"
+            onClick={() => { setEmail(demoEmail); setPassword(demoPassword); setError(''); }}
+            disabled={!demoAvailable}
+            aria-label="Fill demo credentials"
             style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
           >
-            Auto Fill Demo Credentials
+            Fill demo credentials
           </button>
+          {!demoAvailable && <p role="status" style={{ fontSize: 12, color: '#666' }}>Demo credentials are not configured for this frontend. Ask an administrator for access.</p>}
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 12, fontSize: 14 }}>Sign In</button>
         </form>
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: '#666' }}>Accounts are provisioned by an administrator. Public registration is disabled by default.</p>

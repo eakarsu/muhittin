@@ -1,0 +1,135 @@
+[
+  {
+    "name": "CfCompetitiveWinLossIntelligencePatternMiner",
+    "id": "cf-competitive-win-loss-intelligence-pattern-miner",
+    "title": "Competitive win/loss intelligence (pattern miner across closed deals)",
+    "description": "Prepare a professional advisory report for competitive win/loss intelligence (pattern miner across closed deals) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfESignatureIntegrationWithProposalTemplating",
+    "id": "cf-e-signature-integration-with-proposal-templating",
+    "title": "E-signature integration with proposal templating",
+    "description": "Prepare a professional advisory report for e-signature integration with proposal templating using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfRealTimeMeetingTranscriptionActionItem",
+    "id": "cf-real-time-meeting-transcription-action-item",
+    "title": "Real-time meeting transcription + action-item extraction with CRM auto-update",
+    "description": "Prepare a professional advisory report for real-time meeting transcription + action-item extraction with crm auto-update using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfSalesforceHubspotPipedriveBiDirectionalSync",
+    "id": "cf-salesforce-hubspot-pipedrive-bi-directional-sync",
+    "title": "Salesforce / HubSpot / Pipedrive bi-directional sync",
+    "description": "Prepare a professional advisory report for salesforce / hubspot / pipedrive bi-directional sync using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfTerritoryQuotaPlannerWithSimulation",
+    "id": "cf-territory-quota-planner-with-simulation",
+    "title": "Territory + quota planner with simulation",
+    "description": "Prepare a professional advisory report for territory + quota planner with simulation using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "CfVisualWorkflowBuilderBackedByExisting",
+    "id": "cf-visual-workflow-builder-backed-by-existing",
+    "title": "Visual workflow builder backed by existing workflow-automation route",
+    "description": "Prepare a professional advisory report for visual workflow builder backed by existing workflow-automation route using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapAlreadyBroadRemainingGaps",
+    "id": "gap-already-broad-remaining-gaps",
+    "title": "Already broad — remaining gaps:",
+    "description": "Prepare a professional advisory report for already broad — remaining gaps: using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoCoEditingCommentingOnDeals",
+    "id": "gap-no-co-editing-commenting-on-deals",
+    "title": "No co-editing / commenting on deals",
+    "description": "Prepare a professional advisory report for no co-editing / commenting on deals using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoCommissionCalcUiTiedTo",
+    "id": "gap-no-commission-calc-ui-tied-to",
+    "title": "No commission calc UI tied to commission-tracking AI",
+    "description": "Prepare a professional advisory report for no commission calc ui tied to commission-tracking ai using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoCompetitorWinLossPatternMiner",
+    "id": "gap-no-competitor-win-loss-pattern-miner",
+    "title": "No competitor win/loss pattern miner",
+    "description": "Prepare a professional advisory report for no competitor win/loss pattern miner using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoContentModerationAcrossUserGenerated",
+    "id": "gap-no-content-moderation-across-user-generated",
+    "title": "No content moderation across user-generated reviews / posts",
+    "description": "Prepare a professional advisory report for no content moderation across user-generated reviews / posts using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoESignatureIntegration",
+    "id": "gap-no-e-signature-integration",
+    "title": "No e-signature integration",
+    "description": "Prepare a professional advisory report for no e-signature integration using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoMultilingualContentGenerationPipeline",
+    "id": "gap-no-multilingual-content-generation-pipeline",
+    "title": "No multilingual content generation pipeline",
+    "description": "Prepare a professional advisory report for no multilingual content generation pipeline using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoRealTimeMeetingTranscriptionAction",
+    "id": "gap-no-real-time-meeting-transcription-action",
+    "title": "No real-time meeting transcription + action-item extraction (voice-note module exists in name only)",
+    "description": "Prepare a professional advisory report for no real-time meeting transcription + action-item extraction (voice-note module exists in name only) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoSalesforceHubspotPipedriveSyncConnector",
+    "id": "gap-no-salesforce-hubspot-pipedrive-sync-connector",
+    "title": "No Salesforce / HubSpot / Pipedrive sync connector",
+    "description": "Prepare a professional advisory report for no salesforce / hubspot / pipedrive sync connector using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoTerritoryQuotaManagementDespiteOptimizer",
+    "id": "gap-no-territory-quota-management-despite-optimizer",
+    "title": "No territory / quota management (despite optimizer route)",
+    "description": "Prepare a professional advisory report for no territory / quota management (despite optimizer route) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoVisionBasedDocumentParsing",
+    "id": "gap-no-vision-based-document-parsing",
+    "title": "No vision-based document parsing",
+    "description": "Prepare a professional advisory report for no vision-based document parsing using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoWebhooksForPartnerIntegrations",
+    "id": "gap-no-webhooks-for-partner-integrations",
+    "title": "No webhooks for partner integrations",
+    "description": "Prepare a professional advisory report for no webhooks for partner integrations using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  },
+  {
+    "name": "GapNoWorkflowVisualBuilderDespiteWorkflow",
+    "id": "gap-no-workflow-visual-builder-despite-workflow",
+    "title": "No workflow visual builder (despite workflow-automation route)",
+    "description": "Prepare a professional advisory report for no workflow visual builder (despite workflow-automation route) using the brief and evidence you provide. Review the findings, assumptions, and action plan before applying changes.",
+    "samples": []
+  }
+]

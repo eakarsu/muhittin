@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import AIReport from '../components/AIReport';
+import NativeAIControls from '../components/NativeAIControls';
 
 const tabs = [
   { key: 'deal', label: 'Deal Close Prediction' },
@@ -41,6 +43,7 @@ export default function AISales() {
             </button>
           ))}
         </div>
+        <NativeAIControls key={active} context={`${tabs.find(tab => tab.key === active)?.label} planning`}>
         <div style={{ padding: 20 }}>
           {active === 'deal' && <DealClosePrediction />}
           {active === 'territory' && <TerritoryOptimizer />}
@@ -49,6 +52,7 @@ export default function AISales() {
           {active === 'commission' && <CommissionTracking />}
           {active === 'churn' && <CustomerChurnPrediction />}
         </div>
+        </NativeAIControls>
       </div>
     </div>
   );
@@ -58,14 +62,7 @@ function ResultPanel({ result, error, loading }) {
   if (loading) return <div className="card" style={{ marginTop: 12 }}><div className="spinner" /> Working...</div>;
   if (error) return <div className="card" style={{ marginTop: 12, color: '#b91c1c' }}>{error}</div>;
   if (!result) return null;
-  return (
-    <div className="card" style={{ marginTop: 12 }}>
-      <h3 style={{ marginBottom: 8 }}>Result</h3>
-      <pre style={{ whiteSpace: 'pre-wrap', fontSize: 13 }}>
-        {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
-      </pre>
-    </div>
-  );
+  return <AIReport response={result} title="AI Sales result" />;
 }
 
 function JsonInput({ label, value, onChange, rows = 8, placeholder }) {
@@ -108,10 +105,7 @@ function useAI(endpoint) {
 }
 
 function DealClosePrediction() {
-  const [deal, setDeal] = useState(JSON.stringify({
-    id: 'deal-001', name: 'Acme expansion', stage: 'proposal', value: 75000, owner: 'rep-1',
-    daysInStage: 14, lastActivity: '2026-04-30',
-  }, null, 2));
+  const [deal, setDeal] = useState('{}');
   const [history, setHistory] = useState('[]');
   const { result, loading, error, submit } = useAI('/api/ai/deal-close-prediction');
 
@@ -120,6 +114,7 @@ function DealClosePrediction() {
     let dealObj, historyArr;
     try { dealObj = JSON.parse(deal); } catch { return alert('Deal must be JSON'); }
     try { historyArr = JSON.parse(history); } catch { return alert('History must be JSON array'); }
+    if (!dealObj || typeof dealObj !== 'object' || Array.isArray(dealObj) || !Object.keys(dealObj).length) return alert('Supply an actual deal before predicting.');
     submit({ deal: dealObj, history: historyArr });
   };
 
@@ -136,8 +131,8 @@ function DealClosePrediction() {
 }
 
 function TerritoryOptimizer() {
-  const [reps, setReps] = useState('[\n  {"id": "rep-1", "name": "Alex", "skills": ["fintech"], "region": "NW"}\n]');
-  const [accounts, setAccounts] = useState('[\n  {"id": "acc-1", "name": "Acme", "industry": "fintech", "region": "NW", "size": "mid"}\n]');
+  const [reps, setReps] = useState('[]');
+  const [accounts, setAccounts] = useState('[]');
   const [constraints, setConstraints] = useState('{\n  "maxAccountsPerRep": 30\n}');
   const { result, loading, error, submit } = useAI('/api/ai/territory-optimizer');
 
@@ -147,6 +142,7 @@ function TerritoryOptimizer() {
     try { r = JSON.parse(reps); } catch { return alert('Reps must be a JSON array'); }
     try { a = JSON.parse(accounts); } catch { return alert('Accounts must be a JSON array'); }
     try { c = JSON.parse(constraints); } catch { return alert('Constraints must be JSON'); }
+    if (!Array.isArray(r) || !r.length || !Array.isArray(a) || !a.length) return alert('Supply actual reps and accounts before optimizing.');
     submit({ reps: r, accounts: a, constraints: c });
   };
 
@@ -224,9 +220,7 @@ function CommissionTracking() {
 }
 
 function CustomerChurnPrediction() {
-  const [customer, setCustomer] = useState(JSON.stringify({
-    id: 'cust-001', name: 'Acme', plan: 'pro', tenureMonths: 18,
-  }, null, 2));
+  const [customer, setCustomer] = useState('{}');
   const [usage, setUsage] = useState('[]');
   const [supportHistory, setSupportHistory] = useState('[]');
   const [payments, setPayments] = useState('[]');
@@ -239,6 +233,7 @@ function CustomerChurnPrediction() {
     try { u = JSON.parse(usage); } catch { return alert('Usage must be JSON array'); }
     try { s = JSON.parse(supportHistory); } catch { return alert('Support history must be JSON array'); }
     try { p = JSON.parse(payments); } catch { return alert('Payments must be JSON array'); }
+    if (!c || typeof c !== 'object' || Array.isArray(c) || !Object.keys(c).length) return alert('Supply an actual customer before predicting.');
     submit({ customer: c, usage: u, supportHistory: s, payments: p });
   };
 

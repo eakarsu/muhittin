@@ -120,7 +120,15 @@ function createApp({ config = getRuntimeConfig(), database = pool } = {}) {
     }
   });
 
-  app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
+
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js");
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: aiWorkspaceSupport.verifiedActorAuth(require("./middleware/auth.js").authenticateToken),
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
+app.use((_req, res) => res.status(404).json({ error: 'Not found' }));
   app.use((error, req, res, _next) => {
     const status = Number.isInteger(error.status) ? error.status : 500;
     console.error(`Request ${req.id} failed (${status})${config.nodeEnv === 'development' ? `: ${error.stack || error.message}` : ''}`);

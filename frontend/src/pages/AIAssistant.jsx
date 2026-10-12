@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import ReactMarkdown from 'react-markdown';
+import AIReport from '../components/AIReport';
+import NativeAIControls from '../components/NativeAIControls';
+import useNativeAIRequest from '../components/useNativeAIRequest';
 
 const suggestedPrompts = [
   'How can I get more customers for my dental practice?',
@@ -14,6 +16,7 @@ const suggestedPrompts = [
 ];
 
 export default function AIAssistant() {
+  const nativeAIRequest = useNativeAIRequest();
   const { api } = useAuth();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -29,10 +32,11 @@ export default function AIAssistant() {
     setLoading(true);
 
     try {
-      const data = await api('/api/ai/ask', {
+      const data = await nativeAIRequest.run((signal) => api('/api/ai/ask', {
+        signal,
         method: 'POST',
         body: JSON.stringify({ question, context: 'The user runs a local business and needs practical growth advice.' })
-      });
+      }));
       setMessages(prev => [...prev, { role: 'assistant', content: data.content }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}` }]);
@@ -43,7 +47,7 @@ export default function AIAssistant() {
   const handleSubmit = (e) => { e.preventDefault(); sendMessage(); };
 
   return (
-    <div>
+    <NativeAIControls busy={nativeAIRequest.busy} onCancel={() => { nativeAIRequest.cancel(); setLoading(false); }} context="local business growth advice">
       <div className="page-header">
         <div><h1>AI Assistant</h1><p className="subtitle">Get AI-powered business growth advice</p></div>
       </div>
@@ -59,7 +63,7 @@ export default function AIAssistant() {
             <p style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Suggested prompts:</p>
             <div className="suggested-prompts">
               {suggestedPrompts.map(p => (
-                <button key={p} onClick={() => sendMessage(p)}>{p}</button>
+                <button type="button" key={p} disabled={loading} onClick={() => setInput(p)}>{p}</button>
               ))}
             </div>
           </>
@@ -70,7 +74,7 @@ export default function AIAssistant() {
             {messages.map((m, i) => (
               <div key={i} className={`chat-message ${m.role}`}>
                 <div className="bubble">
-                  {m.role === 'assistant' ? <ReactMarkdown>{m.content}</ReactMarkdown> : m.content}
+                  {m.role === 'assistant' ? <AIReport response={m.content} /> : m.content}
                 </div>
               </div>
             ))}
@@ -83,10 +87,10 @@ export default function AIAssistant() {
         )}
 
         <form onSubmit={handleSubmit} className="chat-input">
-          <input value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about business growth..." disabled={loading} />
+          <input data-ai-field="input" value={input} onChange={e => setInput(e.target.value)} placeholder="Ask about business growth..." disabled={loading} />
           <button type="submit" className="btn btn-primary" disabled={loading || !input.trim()}>Send</button>
         </form>
       </div>
-    </div>
+    </NativeAIControls>
   );
 }
