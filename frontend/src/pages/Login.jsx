@@ -8,20 +8,22 @@ export default function Login() {
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
-  const demoEmail = import.meta.env.VITE_DEMO_EMAIL;
-  const demoPassword = import.meta.env.VITE_DEMO_PASSWORD;
-  const demoAvailable = Boolean(demoEmail && demoPassword);
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const submitLogin = async (loginEmail, loginPassword) => {
     setError('');
     try {
-      await login(email, password);
+      await login(loginEmail, loginPassword);
       navigate('/admin');
     } catch (loginError) {
       setError(loginError.message);
     }
   };
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+    await submitLogin(email, password);
+  };
+
 
   return (
     <div className="login-page">
@@ -38,17 +40,8 @@ export default function Login() {
             <label htmlFor="staff-password">Password</label>
             <input id="staff-password" type="password" value={password} onChange={event => setPassword(event.target.value)} autoComplete="current-password" maxLength="128" required />
           </div>
-          <button
-            type="button"
-            onClick={() => { setEmail(demoEmail); setPassword(demoPassword); setError(''); }}
-            disabled={!demoAvailable}
-            aria-label="Fill demo credentials"
-            style={{ width: '100%', marginBottom: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid currentColor', background: 'transparent', cursor: 'pointer' }}
-          >
-            Fill demo credentials
-          </button>
-          {!demoAvailable && <p role="status" style={{ fontSize: 12, color: '#666' }}>Demo credentials are not configured for this frontend. Ask an administrator for access.</p>}
           <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: 12, fontSize: 14 }}>Sign In</button>
+        <button type="button" onClick={(e) => { e.preventDefault(); setEmail('admin@demo.local'); setPassword('Demo!23456'); }}>Log In as Demo</button>
         </form>
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: '#666' }}>Accounts are provisioned by an administrator. Public registration is disabled by default.</p>
       </div>

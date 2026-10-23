@@ -100,6 +100,8 @@ function createApp({ config = getRuntimeConfig(), database = pool } = {}) {
   app.use('/api/industries', require('./routes/industries'));
   app.use('/api/search', require('./routes/search'));
   app.use('/api/custom-views', require('./routes/customViews'));
+  app.use('/api/tasks', require('./routes/tasks'));
+  app.use('/api/wave3c', require('./routes/wave3c'));
 
   const gapAccess = [authenticateToken, requireRole('owner', 'admin', 'manager')];
   for (const [slug, modulePath] of gapRoutes) app.use(`/api/${slug}`, ...gapAccess, require(modulePath));

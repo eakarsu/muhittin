@@ -21,6 +21,27 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
+// Export leads as CSV or JSON (same filters as the list). Declared before /:id.
+router.get('/export', authenticateToken, async (req, res) => {
+  try {
+    const { business_id, status, source, search, format = 'json' } = req.query;
+    let query = 'SELECT l.*, b.name as business_name FROM leads l LEFT JOIN businesses b ON l.business_id = b.id WHERE 1=1';
+    const params = [];
+    if (business_id) { params.push(business_id); query += ` AND l.business_id = $${params.length}`; }
+    if (status) { params.push(status); query += ` AND l.status = $${params.length}`; }
+    if (source) { params.push(source); query += ` AND l.source = $${params.length}`; }
+    if (search) { params.push(`%${search}%`); query += ` AND (l.name ILIKE $${params.length} OR l.email ILIKE $${params.length})`; }
+    query += ' ORDER BY l.created_at DESC LIMIT 1000';
+    const result = await pool.query(query, params);
+    if (String(format).toLowerCase() === 'csv') {
+      const { toCsv, LOCATION_COLUMNS } = require('../wave1b/core');
+      res.setHeader('Content-Type', 'text/csv'); res.setHeader('Content-Disposition', 'attachment; filename="leads.csv"');
+      return res.send(toCsv(result.rows, LOCATION_COLUMNS));
+    }
+    return res.json({ data: result.rows, total: result.rows.length });
+  } catch (err) { return res.status(500).json({ error: err.message }); }
+});
+
 router.get('/stats', authenticateToken, async (req, res) => {
   try {
     const total = await pool.query('SELECT COUNT(*) FROM leads');

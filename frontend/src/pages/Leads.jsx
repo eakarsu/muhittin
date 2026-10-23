@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import SortableTable from '../components/SortableTable';
+import FeaturePackPanel from '../components/FeaturePackPanel';
 import ReactMarkdown from 'react-markdown';
 
 const statusColors = { new: 'badge-blue', contacted: 'badge-yellow', qualified: 'badge-purple', won: 'badge-green', lost: 'badge-red' };
@@ -74,6 +75,8 @@ export default function Leads() {
           <button className="btn btn-primary" onClick={handleCreate}>+ New Lead</button>
         </div>
       </div>
+
+      <FeaturePackPanel />
 
       {aiResult && (
         <div className="card" style={{ marginBottom: 16 }}>
